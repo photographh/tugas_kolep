@@ -20,5 +20,5 @@ tugas kolep bersama raindra
 ...
 
 ## Author
-photographh
 Rainn969
+photographh
