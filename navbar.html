@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KlyvoMart</title>
+
+ <script src="https://cdn.tailwindcss.com"></script>
+
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: {
+        mono: ['Space Mono', 'monospace'],
+        courier: ['Courier Prime', 'monospace'],
+      }
+    }
+  }
+}
+</script>
+</head>
+<body class="bg-white text-black min-h-screen font-mono">
+  <!-- DETAIL -->
+  <div class="product" onclick="goToDetail(1)">
+  </div>
+  <!-- NAVBAR -->
+  <nav class="sticky top-0 z-[100] bg-white border-b-[3px] border-black flex items-center justify-between px-6 py-3 flex-wrap gap-2">
+
+    <div class="font-courier text-[22px] font-bold tracking-[-1px]">
+    Klyvo<span class="bg-black text-white px-1">Mart</span>
+    </div>
+
+    <div class="hidden md:flex items-center gap-2 flex-1 max-w-[420px] mx-6">
+
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="cari produk..."
+        oninput="searchProducts()"
+        class="flex-1 border-2 border-black px-3 py-2 text-[11px] outline-none focus:bg-gray-100"
+      />
+
+      <select
+        id="categoryFilter"
+        onchange="searchProducts()"
+        class="border-2 border-black px-2 py-2 text-[11px] outline-none cursor-pointer bg-white"
+      >
+        <option value="">All Categories</option>
+        <option value="men's clothing">Men's Clothing</option>
+        <option value="women's clothing">Women's Clothing</option>
+        <option value="jewelery">Jewelery</option>
+        <option value="electronics">Electronics</option>
+      </select>
+
+    </div>
+
+    <div class="flex items-center gap-4">
+
+      <a
+        href="/login.html"
+        class="text-[11px] border-b border-black"
+      >
+        Log Out
+      </a>
+
+      <button
+        onclick="toggleCart()"
+        class="bg-black text-white px-4 py-2 text-[11px] flex items-center gap-2 hover:bg-neutral-800"
+      >
+        Cart
+
+        <span
+          id="cartBadge"
+          class="bg-white text-black text-[10px] font-bold px-2 min-w-[18px] text-center"
+        >
+          0
+        </span>
+      </button>
+
+    </div>
+
+  </nav>
+
+  <!-- HERO -->
+  <section class="border-[3px] border-black border-t-0 px-6 py-10 text-center relative">
+
+    <div class="text-[10px] tracking-[8px] mb-4 text-gray-500">
+      ★ ★ ★ ★ ★
+    </div>
+
+    <h1 class="font-courier text-[36px] leading-none font-bold uppercase tracking-[-1px] mb-3 md:text-[48px]">
+      Welcome To <br>
+      KlyvoMart
+    </h1>
+
+    <p class="text-[11px] text-gray-600 border-t border-dashed border-black pt-3 mt-3">
+      Find interesting products and the best quality here
+    </p>
+
+  </section>
+
+  <!-- MAIN -->
+  <main class="p-6">
+
+    <div class="text-[10px] font-bold tracking-[4px] uppercase border-b-[3px] border-black pb-2 mb-5">
+      Our Products
+    </div>
+
+    <!-- LOADING -->
+    <div id="loading" class="text-center py-16 text-[12px] text-gray-500">
+
+      <div class="w-7 h-7 border-[3px] border-black border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+
+      <p>Loading Product...</p>
+
+    </div>
+
+    <!-- GRID -->
+    <div
+      id="grid"
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+    ></div>
+
+  </main>
+
+  <!-- CART OVERLAY -->
+  <div
+    id="cartOverlay"
+    onclick="toggleCart()"
+    class="hidden fixed inset-0 bg-black/60 z-[200]"
+  ></div>
+
+  <!-- CART SIDEBAR -->
+  <aside
+    id="cartSidebar"
+    class="fixed top-0 -right-[360px] w-[340px] h-screen bg-white border-l-[3px] border-black z-[300] transition-all duration-300 flex flex-col"
+  >
+
+    <!-- HEADER -->
+    <div class="p-4 border-b-2 border-black flex items-center justify-between">
+
+      <h2 class="text-[13px] font-bold tracking-[3px]">
+        CART
+      </h2>
+
+      <button
+        onclick="toggleCart()"
+        class="w-[30px] h-[30px] border-2 border-black flex items-center justify-center hover:bg-black hover:text-white"
+      >
+        ✕
+      </button>
+
+    </div>
+
+   <!-- ITEMS -->
+        <div
+            id="cartItems"
+            class="flex-1 overflow-y-auto p-4 hide-scroll">
+        </div>
+    <!-- FOOTER -->
+    <div
+      id="cartFooter"
+      class="hidden border-t-2 border-black p-4 flex-col gap-3"
+    >
+
+      <div class="flex items-center justify-between text-[13px] font-bold border-b border-dashed border-black pb-3">
+        <span>TOTAL</span>
+        <strong id="cartTotal">$0</strong>
+      </div>
+
+      <button
+        onclick="checkout()"
+        class="w-full bg-black text-white text-[12px] uppercase tracking-[2px] py-3 hover:bg-neutral-800"
+      >
+        Pay Now
+      </button>
+
+    </div>
+
+  </aside>
+
+  <!-- MODAL OVERLAY -->
+  <div
+    id="modalOverlay"
+    onclick="closeModal()"
+    class="hidden fixed inset-0 bg-black/60 z-[400]"
+  ></div>
+
+  <!-- MODAL -->
+  <div
+    id="buyModal"
+    class="hidden fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white border-[3px] border-black z-[500] w-[92vw] max-w-[540px] max-h-[88vh] overflow-y-auto"
+  >
+
+    <button
+      onclick="closeModal()"
+      class="sticky top-0 float-right mt-3 mr-3 bg-black text-white w-[30px] h-[30px]"
+    >
+      ✕
+    </button>
+
+    <div id="modalBody" class="p-5 clear-both"></div>
+
+  </div>
+
+  <!-- TOAST -->
+  <div
+    id="toast"
+    class="fixed bottom-6 left-1/2 -translate-x-1/2 translate-y-[60px] bg-black text-white text-[11px] px-6 py-3 border-2 border-white outline outline-2 outline-black opacity-0 transition-all duration-300 z-[999] whitespace-nowrap pointer-events-none"
+  ></div>
+
+  <script src="api.js"></script>
+
+</body>
+</html>
